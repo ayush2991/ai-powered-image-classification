@@ -1,6 +1,6 @@
 dataset/
 split_dataset/
-epoch_*.keras
+epoch_*.pt
 
 # Python
 __pycache__/
@@ -49,11 +49,11 @@ dist/
 
 # Machine Learning specific
 # Models
+*.keras
 *.pkl
 *.joblib
 *.h5
 *.pth
-*.pt
 *.onnx
 *.pb
 saved_model/

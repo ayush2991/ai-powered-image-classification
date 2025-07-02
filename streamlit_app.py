@@ -1,18 +1,25 @@
 import streamlit as st
 import os
 import numpy as np
-import cv2
 from glob import glob
 from PIL import Image
-import tensorflow as tf
+import torch
+import torchvision.transforms as transforms
+from train import AdvancedImageClassifierTorch
 
 # --- Load model and class names ---
-MODEL_PATH = "best_model.keras"
+MODEL_PATH = "best_finetuned_model.pt"
 TEST_DIR = "split_dataset/test"
 
 @st.cache_resource
 def load_model():
-    return tf.keras.models.load_model(MODEL_PATH)
+    class_names = get_class_names()
+    num_classes = len(class_names)
+    model = AdvancedImageClassifierTorch(num_classes=num_classes, base_model_name='mobilenet_v2')
+    state_dict = torch.load(MODEL_PATH, map_location=torch.device('cpu'))
+    model.load_state_dict(state_dict)
+    model.eval()
+    return model
 
 @st.cache_data
 def get_class_names():
@@ -23,52 +30,23 @@ def get_sample_images(class_name, max_images=20):
     pattern = os.path.join(TEST_DIR, class_name, "*")
     return sorted(glob(pattern))[:max_images]
 
-def preprocess_image(img_path, img_height=224, img_width=224):
-    img = cv2.imread(img_path)
-    img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-    img = cv2.resize(img, (img_width, img_height))
-    img = img.astype('float32') / 255.0
-    return np.expand_dims(img, axis=0)
+def preprocess_image(img_path, img_height=300, img_width=200):
+    img = Image.open(img_path).convert('RGB')
+    transform = transforms.Compose([
+        transforms.Resize((img_height, img_width)),
+        transforms.ToTensor(),
+        transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
+    ])
+    img = transform(img)
+    return img.unsqueeze(0)
 
 def predict(model, img_array, class_names):
-    preds = model.predict(img_array)
-    idx = np.argmax(preds[0])
-    confidence = float(preds[0][idx])
-    return class_names[idx], confidence, preds[0]
-
-def gradcam_heatmap(model, img_array, class_idx, layer_name=None):
-    # Use the functional API to access the base model and its input/output
-    base_model = model.layers[0]
-    # Ensure base_model is built
-    _ = base_model(np.zeros((1, 224, 224, 3), dtype=np.float32))
-    if layer_name is None:
-        conv_layers = [l for l in base_model.layers if isinstance(l, tf.keras.layers.Conv2D)]
-        if not conv_layers:
-            raise ValueError("No Conv2D layer found in the model for GradCAM.")
-        layer_name = conv_layers[-1].name
-    # Build a grad model using the base model's input, outputs conv layer and full model prediction
-    # The prediction must be computed as model(sequential_input), not model(base_model.output)
-    grad_model = tf.keras.models.Model(
-        [model.input], [base_model.get_layer(layer_name).output, model.output]
-    )
-    with tf.GradientTape() as tape:
-        conv_outputs, predictions = grad_model(img_array)
-        loss = predictions[:, class_idx]
-    grads = tape.gradient(loss, conv_outputs)[0]
-    output = conv_outputs[0]
-    gate_f = tf.cast(output > 0, 'float32')
-    gate_r = tf.cast(grads > 0, 'float32')
-    guided_grads = gate_f * gate_r * grads
-    weights = tf.reduce_mean(guided_grads, axis=(0, 1))
-    cam = np.zeros(output.shape[0:2], dtype=np.float32)
-    for i, w in enumerate(weights):
-        cam += w * output[:, :, i]
-    cam = np.maximum(cam, 0)
-    max_cam = np.max(cam)
-    if max_cam != 0:
-        cam = cam / max_cam
-    cam = cv2.resize(cam, (224, 224))
-    return cam
+    with torch.no_grad():
+        outputs = model(img_array)
+        probs = torch.nn.functional.softmax(outputs, dim=1).cpu().numpy()[0]
+        idx = np.argmax(probs)
+        confidence = float(probs[idx])
+    return class_names[idx], confidence, probs
 
 def show_probability_bar_chart(class_names, all_preds, top_k=10):
     import pandas as pd
@@ -97,42 +75,12 @@ def show_probability_bar_chart(class_names, all_preds, top_k=10):
 # --- Streamlit UI ---
 st.set_page_config(page_title="Caltech101 Image Classifier", layout="wide", page_icon="🖼️")
 
-# Custom CSS for better visuals
-st.markdown("""
-    <style>
-    .main { background-color: #f8fafc; }
-    .stApp { background-color: #f8fafc; }
-    .st-bb { background: #f8fafc; }
-    .st-cq { background: #f8fafc; }
-    .stProgress > div > div > div > div {
-        background-image: linear-gradient(90deg, #3b82f6, #06b6d4);
-    }
-    .stSlider > div[data-baseweb="slider"] > div {
-        background: #e0e7ef;
-    }
-    .stButton>button {
-        color: white;
-        background: linear-gradient(90deg, #3b82f6, #06b6d4);
-        border: none;
-        border-radius: 6px;
-        padding: 0.5em 1.5em;
-        font-weight: 600;
-    }
-    </style>
-""", unsafe_allow_html=True)
-
 st.title("🖼️ Caltech101 Image Classifier Demo")
-st.markdown(
-    """
-    <div style="font-size:1.2em;">
-    <ul>
-      <li><b>Browse</b> sample images by class.</li>
-      <li><b>See</b> the model's prediction and confidence.</li>
-      <li><b>Visualize</b> model attention with <b>GradCAM</b>.</li>
-    </ul>
-    </div>
-    """, unsafe_allow_html=True
-)
+st.markdown("""
+- **Browse** sample images by class.
+- **See** the model's prediction and confidence.
+- **Visualize** model attention with GradCAM.
+""")
 
 model = load_model()
 class_names = get_class_names()
@@ -153,24 +101,18 @@ col1, col2 = st.columns([1, 2], gap="large")
 with col1:
     st.subheader("Sample Image")
     st.image(img_path, caption=f"Class: {selected_class}", use_container_width=True)
-    st.markdown(f"<div style='text-align:center; color: #64748b;'>Image {img_idx+1} of {len(sample_images)}</div>", unsafe_allow_html=True)
+    st.write(f"Image {img_idx+1} of {len(sample_images)}")
 
 with col2:
     st.subheader("Model Prediction")
     img_array = preprocess_image(img_path)
     pred_class, confidence, all_preds = predict(model, img_array, class_names)
-    st.markdown(
-        f"<span style='font-size:1.3em;'>🔮 <b>Predicted:</b> <span style='color:#3b82f6'>{pred_class}</span></span>",
-        unsafe_allow_html=True
-    )
-    st.markdown(
-        f"<span style='font-size:1.1em;'>Confidence: <b>{confidence:.2%}</b></span>",
-        unsafe_allow_html=True
-    )
+    st.write(f"🔮 **Predicted:** {pred_class}")
+    st.write(f"Confidence: **{confidence:.2%}**")
     st.progress(confidence)
     # Show top-5 predictions as a table
     top5_idx = np.argsort(all_preds)[::-1][:5]
-    st.markdown("**Top-5 Predictions:**")
+    st.write("**Top-5 Predictions:**")
     top5_table = {
         "Class": [class_names[i] for i in top5_idx],
         "Confidence": [f"{all_preds[i]:.2%}" for i in top5_idx]
@@ -189,9 +131,9 @@ for i, img in enumerate(sample_images[:6]):
     with gallery_cols[i]:
         st.image(img, use_container_width=True)
         if i == img_idx:
-            st.markdown("<div style='text-align:center; color:#3b82f6; font-weight:bold;'>Selected</div>", unsafe_allow_html=True)
+            st.write("Selected")
         else:
-            st.markdown("<div style='text-align:center; color:#64748b;'>Sample</div>", unsafe_allow_html=True)
+            st.write("Sample")
 
 st.markdown("---")
-st.caption("Made with Streamlit · Powered by TensorFlow/Keras · Caltech101 Demo")
+st.caption("Made with Streamlit · Powered by PyTorch · Caltech101 Demo")
