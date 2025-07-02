@@ -1,13 +1,10 @@
-tensorflow
 opencv-python
 pillow
 numpy
 matplotlib
 scikit-learn
 seaborn
-tensorflow-keras
-keras
-tensorflow-metal
-tensorflow-macos
+torch
+torchvision
 plotly
 streamlit

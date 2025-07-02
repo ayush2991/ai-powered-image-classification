@@ -1,385 +1,189 @@
 """
-AI-Powered Image Classification System
-Advanced deep learning model for multi-class image recognition with 98% accuracy
-using convolutional neural networks and transfer learning techniques.
+AI-Powered Image Classification System (PyTorch Version)
+Advanced deep learning model for multi-class image recognition using transfer learning.
 """
 
 import os
 import platform
-
-# Suppress TensorFlow INFO and WARNING messages for cleaner output.
-# 0 = all messages are logged (default)
-# 1 = INFO messages are not printed
-# 2 = INFO and WARNING messages are not printed
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
-import tensorflow as tf
-
-# On macOS, TensorFlow will automatically use the Metal GPU if `tensorflow-metal` is installed.
-# The following check provides explicit feedback. For GPU acceleration on Apple Silicon,
-# ensure you have installed the `tensorflow-metal` package.
-if platform.system() == "Darwin":
-    if tf.config.list_physical_devices('GPU'):
-        print("Metal GPU found and will be used.")
-    else:
-        print("Metal GPU not found, using CPU. Install `tensorflow-metal` for GPU acceleration.")
-
-from tensorflow.keras import layers, applications
-from tensorflow.keras.preprocessing.image import ImageDataGenerator
-import cv2
+import random
+from glob import glob
+import shutil
 import numpy as np
 import matplotlib.pyplot as plt
 from PIL import Image
 from sklearn.metrics import classification_report, confusion_matrix
 import seaborn as sns
+import torch
+import torch.nn as nn
+import torch.optim as optim
+from torchvision import datasets, transforms, models
 
-class AdvancedImageClassifier:
-    def __init__(self, num_classes, img_height=224, img_width=224):
-        self.num_classes = num_classes
-        self.img_height = img_height
-        self.img_width = img_width
-        self.model = None
-        self.history = None
-        self.class_names = []
-    
-    def create_model(self, base_model_name='MobileNetV2'):
-        """
-        Create a transfer learning model using a pre-trained CNN.
-        """
-        # Load pre-trained base model
-        if base_model_name == 'MobileNetV2':
-            base_model = applications.MobileNetV2(
-                weights='imagenet',
-                include_top=False,
-                input_shape=(self.img_height, self.img_width, 3)
-            )
-        elif base_model_name == 'ResNet50':
-            base_model = applications.ResNet50(
-                weights='imagenet',
-                include_top=False,
-                input_shape=(self.img_height, self.img_width, 3)
-            )
-        elif base_model_name == 'EfficientNetB0':
-            base_model = applications.EfficientNetB0(
-                weights='imagenet',
-                include_top=False,
-                input_shape=(self.img_height, self.img_width, 3)
-            )
+# Device configuration
+if torch.backends.mps.is_available() and torch.backends.mps.is_built():
+    device = torch.device("mps")
+elif torch.cuda.is_available():
+    device = torch.device("cuda")
+else:
+    device = torch.device("cpu")
+print(f"Using device: {device}")
+
+class AdvancedImageClassifierTorch(nn.Module):
+    def __init__(self, num_classes, base_model_name='mobilenet_v2'):
+        super().__init__()
+        if base_model_name == 'mobilenet_v2':
+            self.base = models.mobilenet_v2(weights=models.MobileNet_V2_Weights.IMAGENET1K_V1)
+            in_features = self.base.classifier[1].in_features
+            self.base.classifier = nn.Identity()
+        elif base_model_name == 'resnet50':
+            self.base = models.resnet50(weights=models.ResNet50_Weights.IMAGENET1K_V1)
+            in_features = self.base.fc.in_features
+            self.base.fc = nn.Identity()
         else:
             raise ValueError("Unsupported base model")
-        
-        # Freeze base model layers
-        base_model.trainable = False
-        
-        # Add custom classification head
-        model = tf.keras.Sequential([
-            base_model,
-            layers.GlobalAveragePooling2D(),
-            layers.Dropout(0.3),
-            layers.Dense(512, activation='relu'),
-            layers.BatchNormalization(),
-            layers.Dropout(0.5),
-            layers.Dense(256, activation='relu'),
-            layers.BatchNormalization(),
-            layers.Dropout(0.3),
-            layers.Dense(self.num_classes, activation='softmax')
-        ])
-        
-        # Compile model
-        model.compile(
-            optimizer=tf.keras.optimizers.Adam(learning_rate=0.001),
-            loss='categorical_crossentropy',
-            metrics=['accuracy', tf.keras.metrics.TopKCategoricalAccuracy(k=5, name='top_5_accuracy')]
+        self.classifier = nn.Sequential(
+            nn.Dropout(0.3),
+            nn.Linear(in_features, 512),
+            nn.ReLU(),
+            nn.BatchNorm1d(512),
+            nn.Dropout(0.5),
+            nn.Linear(512, 256),
+            nn.ReLU(),
+            nn.BatchNorm1d(256),
+            nn.Dropout(0.3),
+            nn.Linear(256, num_classes)
         )
-        
-        self.model = model
-        return model
-    
-    def prepare_data(self, train_dir, val_dir, batch_size=32):
-        """
-        Prepare training and validation data with augmentation.
-        """
-        # Data augmentation for training
-        train_datagen = ImageDataGenerator(
-            rescale=1./255,
-            rotation_range=20,
-            width_shift_range=0.2,
-            height_shift_range=0.2,
-            horizontal_flip=True,
-            zoom_range=0.2,
-            shear_range=0.2,
-            fill_mode='nearest'
-        )
-        
-        # Only rescaling for validation
-        val_datagen = ImageDataGenerator(rescale=1./255)
-        
-        # Create data generators
-        train_generator = train_datagen.flow_from_directory(
-            train_dir,
-            target_size=(self.img_height, self.img_width),
-            batch_size=batch_size,
-            class_mode='categorical'
-        )
-        
-        val_generator = val_datagen.flow_from_directory(
-            val_dir,
-            target_size=(self.img_height, self.img_width),
-            batch_size=batch_size,
-            class_mode='categorical'
-        )
-        
-        self.class_names = list(train_generator.class_indices.keys())
-        return train_generator, val_generator
-    
-    def train_model(self, train_gen, val_gen, epochs=15):
-        """
-        Train the model with callbacks for optimal performance.
-        """
-        # Callbacks
-        callbacks = [
-            tf.keras.callbacks.EarlyStopping(
-                monitor='val_accuracy',
-                patience=10,
-                restore_best_weights=True
-            ),
-            tf.keras.callbacks.ReduceLROnPlateau(
-                monitor='val_loss',
-                factor=0.2,
-                patience=5,
-                min_lr=1e-7
-            ),
-            tf.keras.callbacks.ModelCheckpoint(
-                'best_model.keras',
-                monitor='val_accuracy',
-                save_best_only=True,
-                verbose=1
-            ),
-            tf.keras.callbacks.ModelCheckpoint(
-                filepath='epoch_{epoch:02d}_model.keras',
-                save_freq='epoch',
-                save_best_only=False,
-                verbose=1
-            )
-        ]
-        
-        # Train model
-        self.history = self.model.fit(
-            train_gen,
-            epochs=epochs,
-            validation_data=val_gen,
-            callbacks=callbacks,
-            verbose=1
-        )
-        
-        return self.history
-    
-    def fine_tune_model(self, train_gen, val_gen, epochs=5):
-        """
-        Fine-tune the model by unfreezing some layers.
-        """
-        # Unfreeze the top layers of the base model
-        base_model = self.model.layers[0]
-        base_model.trainable = True
-        
-        # Fine-tune from this layer onwards
-        fine_tune_at = len(base_model.layers) - 20
-        
-        # Freeze all the layers before fine_tune_at
-        for layer in base_model.layers[:fine_tune_at]:
-            layer.trainable = False
-        
-        # Use a lower learning rate for fine-tuning
-        self.model.compile(
-            optimizer=tf.keras.optimizers.Adam(learning_rate=0.0001/10),
-            loss='categorical_crossentropy',
-            metrics=['accuracy', tf.keras.metrics.TopKCategoricalAccuracy(k=5, name='top_5_accuracy')]
-        )
-        
-        # Continue training
-        fine_tune_history = self.model.fit(
-            train_gen,
-            epochs=epochs,
-            validation_data=val_gen,
-            verbose=1
-        )
-        
-        return fine_tune_history
-    
-    def predict_image(self, image_path):
-        """
-        Predict class of a single image.
-        """
-        # Load and preprocess image
-        img = cv2.imread(image_path)
-        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-        img = cv2.resize(img, (self.img_width, self.img_height))
-        img = np.expand_dims(img, axis=0)
-        img = img.astype('float32') / 255.0
-        
-        # Make prediction
-        predictions = self.model.predict(img)
-        predicted_class = np.argmax(predictions[0])
-        confidence = np.max(predictions[0])
-        
-        return {
-            'class': self.class_names[predicted_class],
-            'confidence': float(confidence),
-            'all_predictions': {
-                self.class_names[i]: float(predictions[0][i]) 
-                for i in range(len(self.class_names))
-            }
-        }
-    
-    def predict_batch(self, image_paths):
-        """
-        Predict classes for multiple images.
-        """
-        results = []
-        for path in image_paths:
-            try:
-                result = self.predict_image(path)
-                results.append({
-                    'image_path': path,
-                    **result
-                })
-            except Exception as e:
-                results.append({
-                    'image_path': path,
-                    'error': str(e)
-                })
-        return results
-    
-    def visualize_predictions(self, image_paths, num_images=6):
-        """
-        Visualize predictions with confidence scores.
-        """
-        fig, axes = plt.subplots(2, 3, figsize=(15, 10))
-        axes = axes.ravel()
-        
-        for i, path in enumerate(image_paths[:num_images]):
-            # Load image
-            img = cv2.imread(path)
-            img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-            
-            # Get prediction
-            prediction = self.predict_image(path)
-            
-            # Display image
-            axes[i].imshow(img)
-            axes[i].set_title(
-                f"Predicted: {prediction['class']}\n"
-                f"Confidence: {prediction['confidence']:.2%}",
-                fontsize=12
-            )
-            axes[i].axis('off')
-        
-        plt.tight_layout()
-        plt.show()
-    
-    def plot_training_history(self):
-        """
-        Plot training history.
-        """
-        if self.history is None:
-            print("No training history available")
-            return
-        
-        fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 4))
-        
-        # Plot accuracy
-        ax1.plot(self.history.history['accuracy'], label='Training Accuracy')
-        ax1.plot(self.history.history['val_accuracy'], label='Validation Accuracy')
-        ax1.set_title('Model Accuracy')
-        ax1.set_xlabel('Epoch')
-        ax1.set_ylabel('Accuracy')
-        ax1.legend()
-        ax1.grid(True)
-        
-        # Plot loss
-        ax2.plot(self.history.history['loss'], label='Training Loss')
-        ax2.plot(self.history.history['val_loss'], label='Validation Loss')
-        ax2.set_title('Model Loss')
-        ax2.set_xlabel('Epoch')
-        ax2.set_ylabel('Loss')
-        ax2.legend()
-        ax2.grid(True)
-        
-        plt.tight_layout()
-        plt.show()
-    
-    def evaluate_model(self, test_gen):
-        """
-        Comprehensive model evaluation.
-        """
-        # Get predictions
-        test_gen.reset()
-        predictions = self.model.predict(test_gen, verbose=1)
-        predicted_classes = np.argmax(predictions, axis=1)
-        
-        # Get true labels
-        true_classes = test_gen.classes
-        
-        # Classification report
-        print("Classification Report:")
-        print(classification_report(
-            true_classes, 
-            predicted_classes, 
-            target_names=self.class_names
-        ))
-        
-        # Confusion matrix
-        cm = confusion_matrix(true_classes, predicted_classes)
-        plt.figure(figsize=(10, 8))
-        sns.heatmap(
-            cm, 
-            annot=True, 
-            fmt='d', 
-            cmap='Blues',
-            xticklabels=self.class_names,
-            yticklabels=self.class_names
-        )
-        plt.title('Confusion Matrix')
-        plt.ylabel('True Label')
-        plt.xlabel('Predicted Label')
-        plt.show()
-        
-        return {
-            'predictions': predictions,
-            'predicted_classes': predicted_classes,
-            'true_classes': true_classes,
-            'confusion_matrix': cm
-        }
-    
-    def save_model(self, filepath):
-        """
-        Save the trained model.
-        """
-        self.model.save(filepath)
-        print(f"Model saved to {filepath}")
-    
-    def load_model(self, filepath):
-        """
-        Load a trained model.
-        """
-        self.model = tf.keras.models.load_model(filepath)
-        print(f"Model loaded from {filepath}")
 
-# Example usage and demonstration
+    def forward(self, x):
+        x = self.base(x)
+        x = self.classifier(x)
+        return x
+
+def prepare_data(data_dir, img_size=224, batch_size=32):
+    train_transform = transforms.Compose([
+        transforms.RandomResizedCrop(img_size),
+        transforms.RandomHorizontalFlip(),
+        transforms.RandomRotation(20),
+        transforms.ColorJitter(brightness=0.2, contrast=0.2, saturation=0.2, hue=0.1),
+        transforms.ToTensor(),
+        transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
+    ])
+    val_transform = transforms.Compose([
+        transforms.Resize((img_size, img_size)),
+        transforms.ToTensor(),
+        transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
+    ])
+    train_dataset = datasets.ImageFolder(os.path.join(data_dir, 'train'), transform=train_transform)
+    val_dataset = datasets.ImageFolder(os.path.join(data_dir, 'validation'), transform=val_transform)
+    train_loader = torch.utils.data.DataLoader(train_dataset, batch_size=batch_size, shuffle=True, num_workers=2)
+    val_loader = torch.utils.data.DataLoader(val_dataset, batch_size=batch_size, shuffle=False, num_workers=2)
+    class_names = train_dataset.classes
+    return train_loader, val_loader, class_names
+
+def train_model(model, train_loader, val_loader, num_epochs=15, lr=1e-3, save_path='best_model.pt'):
+    criterion = nn.CrossEntropyLoss()
+    optimizer = optim.Adam(model.parameters(), lr=lr)
+    scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'min', patience=5, factor=0.2, min_lr=1e-7)
+    best_val_acc = 0
+    train_loss_hist, val_loss_hist = [], []
+    train_acc_hist, val_acc_hist = [], []
+
+    for epoch in range(num_epochs):
+        model.train()
+        running_loss, running_corrects, total = 0.0, 0, 0
+        for inputs, labels in train_loader:
+            inputs, labels = inputs.to(device), labels.to(device)
+            optimizer.zero_grad()
+            outputs = model(inputs)
+            loss = criterion(outputs, labels)
+            loss.backward()
+            optimizer.step()
+            _, preds = torch.max(outputs, 1)
+            running_loss += loss.item() * inputs.size(0)
+            running_corrects += torch.sum(preds == labels.data).item()
+            total += labels.size(0)
+        epoch_loss = running_loss / total
+        epoch_acc = running_corrects / total
+        train_loss_hist.append(epoch_loss)
+        train_acc_hist.append(epoch_acc)
+
+        # Validation
+        model.eval()
+        val_loss, val_corrects, val_total = 0.0, 0, 0
+        with torch.no_grad():
+            for inputs, labels in val_loader:
+                inputs, labels = inputs.to(device), labels.to(device)
+                outputs = model(inputs)
+                loss = criterion(outputs, labels)
+                _, preds = torch.max(outputs, 1)
+                val_loss += loss.item() * inputs.size(0)
+                val_corrects += torch.sum(preds == labels.data).item()
+                val_total += labels.size(0)
+        val_loss_epoch = val_loss / val_total
+        val_acc_epoch = val_corrects / val_total
+        val_loss_hist.append(val_loss_epoch)
+        val_acc_hist.append(val_acc_epoch)
+        scheduler.step(val_loss_epoch)
+
+        print(f"Epoch {epoch+1}/{num_epochs} - "
+              f"Train Loss: {epoch_loss:.4f}, Acc: {epoch_acc:.4f} | "
+              f"Val Loss: {val_loss_epoch:.4f}, Acc: {val_acc_epoch:.4f}")
+
+        # Save best model
+        if val_acc_epoch > best_val_acc:
+            best_val_acc = val_acc_epoch
+            torch.save(model.state_dict(), save_path)
+            print(f"Saved best model to {save_path}")
+
+        # Save model every epoch
+        torch.save(model.state_dict(), f"epoch_{epoch+1:02d}_model.pt")
+
+    # Plot training history
+    plt.figure(figsize=(12, 4))
+    plt.subplot(1, 2, 1)
+    plt.plot(train_loss_hist, label='Train Loss')
+    plt.plot(val_loss_hist, label='Val Loss')
+    plt.title('Loss')
+    plt.legend()
+    plt.subplot(1, 2, 2)
+    plt.plot(train_acc_hist, label='Train Acc')
+    plt.plot(val_acc_hist, label='Val Acc')
+    plt.title('Accuracy')
+    plt.legend()
+    plt.tight_layout()
+    plt.savefig('train_val_loss.png')
+    plt.show()
+
+def evaluate_model(model, data_loader, class_names):
+    model.eval()
+    all_preds = []
+    all_labels = []
+    with torch.no_grad():
+        for inputs, labels in data_loader:
+            inputs = inputs.to(device)
+            outputs = model(inputs)
+            _, preds = torch.max(outputs, 1)
+            all_preds.extend(preds.cpu().numpy())
+            all_labels.extend(labels.numpy())
+    print("Classification Report:")
+    print(classification_report(all_labels, all_preds, target_names=class_names))
+    cm = confusion_matrix(all_labels, all_preds)
+    plt.figure(figsize=(10, 8))
+    sns.heatmap(cm, annot=False, fmt='d', cmap='Blues',
+                xticklabels=class_names, yticklabels=class_names)
+    plt.title('Confusion Matrix')
+    plt.ylabel('True Label')
+    plt.xlabel('Predicted Label')
+    plt.tight_layout()
+    plt.show()
+
 def main():
-    """
-    Example usage of the AdvancedImageClassifier.
-    """
-    import shutil
-    import random
-    from glob import glob
-
+    # Split dataset if not already split
     dataset_dir = 'dataset'
     split_base = 'split_dataset'
     train_dir = os.path.join(split_base, 'train')
     val_dir = os.path.join(split_base, 'validation')
     test_dir = os.path.join(split_base, 'test')
 
-    # Only split if not already done
     if not os.path.exists(split_base):
         if not os.path.exists(dataset_dir):
             raise FileNotFoundError(f"Dataset directory '{dataset_dir}' not found.")
@@ -389,14 +193,13 @@ def main():
         class_names = [d for d in os.listdir(dataset_dir) if os.path.isdir(os.path.join(dataset_dir, d))]
         if not class_names:
             raise ValueError(f"No class folders found in '{dataset_dir}'.")
-        random.seed(42)  # For reproducibility
+        random.seed(42)
         for class_name in class_names:
             images = glob(os.path.join(dataset_dir, class_name, '*'))
             random.shuffle(images)
             n = len(images)
             n_train = int(0.7 * n)
             n_val = int(0.15 * n)
-            # n_test = n - n_train - n_val  # Not used
             splits = [
                 (images[:n_train], os.path.join(train_dir, class_name)),
                 (images[n_train:n_train+n_val], os.path.join(val_dir, class_name)),
@@ -408,101 +211,33 @@ def main():
                     shutil.copy(img_path, split_dir)
         print(f"Dataset split into train/val/test under '{split_base}' directory.")
 
-    # Get class names from split train directory
-    class_names = [d for d in os.listdir(train_dir) if os.path.isdir(os.path.join(train_dir, d))]
+    # Prepare data
+    train_loader, val_loader, class_names = prepare_data(split_base, img_size=224, batch_size=32)
     num_classes = len(class_names)
-    if num_classes == 0:
-        raise ValueError(f"No classes found in '{train_dir}'. Please check your dataset split.")
-
     print(f"Detected {num_classes} classes: {class_names}")
 
-    classifier = AdvancedImageClassifier(num_classes=num_classes)
-    # Use MobileNetV2 for a smaller, GitHub-friendly model
-    model = classifier.create_model(base_model_name='MobileNetV2')
-    print("Model architecture:")
-    model.summary()
+    # Model
+    model = AdvancedImageClassifierTorch(num_classes=num_classes, base_model_name='mobilenet_v2').to(device)
+    print(model)
 
-    # Prepare data
-    train_gen, val_gen = classifier.prepare_data(
-        train_dir=train_dir,
-        val_dir=val_dir
-    )
+    # Train
+    train_model(model, train_loader, val_loader, num_epochs=15, lr=1e-3, save_path='best_model.pt')
 
-    # Train model
-    history = classifier.train_model(train_gen, val_gen, epochs=15)
+    # Fine-tune (unfreeze base model)
+    for param in model.base.parameters():
+        param.requires_grad = True
+    train_model(model, train_loader, val_loader, num_epochs=5, lr=1e-4, save_path='best_finetuned_model.pt')
 
-    # Fine-tune model
-    fine_tune_history = classifier.fine_tune_model(train_gen, val_gen, epochs=5)
-
-    # Plot training history
-    classifier.plot_training_history()
-
-    # Prepare test data (using validation generator for class names)
-    test_gen, _ = classifier.prepare_data(test_dir, test_dir)
-    evaluation = classifier.evaluate_model(test_gen)
-
-    # Save model
-    classifier.save_model('advanced_image_classifier.keras')
-
-    # Example prediction (when model is trained)
-    sample_images = glob(os.path.join(test_dir, '*', '*'))
-    if sample_images:
-        result = classifier.predict_image(sample_images[0])
-        print(f"Predicted class: {result['class']} with confidence: {result['confidence']:.2%}")
-
-        # Batch prediction and visualization
-        batch_results = classifier.predict_batch(sample_images[:6])
-        for res in batch_results:
-            print(f"{res['image_path']}: {res.get('class', res.get('error'))} ({res.get('confidence', 0):.2%})")
-        classifier.visualize_predictions(sample_images[:6])
-    else:
-        print("No test images found for prediction demo.")
-
-class GradCAM:
-    """
-    Gradient-weighted Class Activation Mapping for model interpretability.
-    """
-    def __init__(self, model, layer_name):
-        self.model = model
-        self.layer_name = layer_name
-        self.grad_model = tf.keras.models.Model(
-            [model.inputs], 
-            [model.get_layer(layer_name).output, model.output]
-        )
-    
-    def generate_heatmap(self, img_array, class_idx):
-        """
-        Generate GradCAM heatmap.
-        """
-        with tf.GradientTape() as tape:
-            conv_outputs, predictions = self.grad_model(img_array)
-            loss = predictions[:, class_idx]
-        
-        # Calculate gradients
-        output = conv_outputs[0]
-        grads = tape.gradient(loss, conv_outputs)[0]
-        
-        # Calculate importance weights
-        gate_f = tf.cast(output > 0, 'float32')
-        gate_r = tf.cast(grads > 0, 'float32')
-        guided_grads = gate_f * gate_r * grads
-        
-        # Average gradients spatially
-        weights = tf.reduce_mean(guided_grads, axis=(0, 1))
-        
-        # Create heatmap
-        cam = np.zeros(output.shape[0:2], dtype=np.float32)
-        for i, w in enumerate(weights):
-            cam += w * output[:, :, i]
-        
-        # Normalize and resize
-        cam = np.maximum(cam, 0)
-        max_cam = np.max(cam)
-        if max_cam != 0:
-            cam = cam / max_cam
-        cam = cv2.resize(cam, (224, 224))
-        
-        return cam
+    # Evaluate
+    test_transform = transforms.Compose([
+        transforms.Resize((224, 224)),
+        transforms.ToTensor(),
+        transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
+    ])
+    test_dataset = datasets.ImageFolder(os.path.join(split_base, 'test'), transform=test_transform)
+    test_loader = torch.utils.data.DataLoader(test_dataset, batch_size=32, shuffle=False, num_workers=2)
+    model.load_state_dict(torch.load('best_finetuned_model.pt', map_location=device))
+    evaluate_model(model, test_loader, class_names)
 
 if __name__ == "__main__":
     main()
