@@ -1,8 +1,7 @@
-opencv-python
 pillow
 numpy
 matplotlib
-opencv-python
+opencv-python-headless
 scikit-learn
 seaborn
 torch
