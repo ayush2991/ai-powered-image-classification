@@ -1,6 +1,6 @@
 dataset/
 split_dataset/
-epoch_*
+epoch_*.keras
 
 # Python
 __pycache__/
@@ -52,7 +52,6 @@ dist/
 *.pkl
 *.joblib
 *.h5
-*.keras
 *.pth
 *.pt
 *.onnx

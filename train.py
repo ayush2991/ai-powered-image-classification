@@ -41,12 +41,18 @@ class AdvancedImageClassifier:
         self.history = None
         self.class_names = []
     
-    def create_model(self, base_model_name='ResNet50'):
+    def create_model(self, base_model_name='MobileNetV2'):
         """
         Create a transfer learning model using a pre-trained CNN.
         """
         # Load pre-trained base model
-        if base_model_name == 'ResNet50':
+        if base_model_name == 'MobileNetV2':
+            base_model = applications.MobileNetV2(
+                weights='imagenet',
+                include_top=False,
+                input_shape=(self.img_height, self.img_width, 3)
+            )
+        elif base_model_name == 'ResNet50':
             base_model = applications.ResNet50(
                 weights='imagenet',
                 include_top=False,
@@ -411,7 +417,8 @@ def main():
     print(f"Detected {num_classes} classes: {class_names}")
 
     classifier = AdvancedImageClassifier(num_classes=num_classes)
-    model = classifier.create_model(base_model_name='ResNet50')
+    # Use MobileNetV2 for a smaller, GitHub-friendly model
+    model = classifier.create_model(base_model_name='MobileNetV2')
     print("Model architecture:")
     model.summary()
 
