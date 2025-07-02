@@ -1,5 +1,6 @@
 dataset/
-split_dataset/
+split_dataset/train/
+split_dataset/validation/
 epoch_*.pt
 
 # Python
