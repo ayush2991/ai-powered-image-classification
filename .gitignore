@@ -1,0 +1,108 @@
+dataset/
+split_dataset/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+.venv/
+.env
+
+# Distribution / packaging
+.Python
+build/
+dist/
+*.egg-info/
+*.egg
+
+# Editors
+.vscode/
+.idea/
+*.swp
+*~
+.DS_Store
+
+# Jupyter Notebook
+.ipynb_checkpoints
+*.ipynb
+
+# Data
+# Add specific data files or directories here
+# For example:
+# data/
+# *.csv
+# *.txt
+# *.json
+# *.pkl
+# *.npy
+# *.parquet
+# *.hdf5
+# *.sqlite
+
+# Machine Learning specific
+# Models
+*.pkl
+*.joblib
+*.h5
+*.keras
+*.pth
+*.pt
+*.onnx
+*.pb
+saved_model/
+checkpoints/
+runs/
+logs/
+artifacts/
+mlruns/ # MLflow
+wandb/ # Weights & Biases
+notebooks/ # If you have notebooks that generate large output or models
+
+# Logs
+*.log
+log/
+
+# Temporary files
+tmp/
+temp/
+
+# Results
+results/
+output/
+figures/
+plots/
+
+# Environment variables
+.env
+
+# pytest cache
+.pytest_cache/
+
+# mypy cache
+.mypy_cache/
+
+# black formatter cache
+.black/
+
+# dvc (data version control)
+.dvc/
+dvc.lock
+
+# Docker
+Dockerfile.bak
+docker-compose.bak
+
+# Others
+.coverage
+.coverage.*
+.tox/
+.hypothesis/
+htmlcov/
+.nox/
