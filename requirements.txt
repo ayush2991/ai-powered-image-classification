@@ -9,3 +9,5 @@ tensorflow-keras
 keras
 tensorflow-metal
 tensorflow-macos
+plotly
+streamlit

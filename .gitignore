@@ -1,5 +1,6 @@
 dataset/
 split_dataset/
+epoch_*
 
 # Python
 __pycache__/

@@ -147,6 +147,12 @@ class AdvancedImageClassifier:
                 monitor='val_accuracy',
                 save_best_only=True,
                 verbose=1
+            ),
+            tf.keras.callbacks.ModelCheckpoint(
+                filepath='epoch_{epoch:02d}_model.keras',
+                save_freq='epoch',
+                save_best_only=False,
+                verbose=1
             )
         ]
         
