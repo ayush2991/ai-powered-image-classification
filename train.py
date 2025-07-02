@@ -131,7 +131,7 @@ class AdvancedImageClassifier:
         self.class_names = list(train_generator.class_indices.keys())
         return train_generator, val_generator
     
-    def train_model(self, train_gen, val_gen, epochs=50):
+    def train_model(self, train_gen, val_gen, epochs=15):
         """
         Train the model with callbacks for optimal performance.
         """
@@ -173,7 +173,7 @@ class AdvancedImageClassifier:
         
         return self.history
     
-    def fine_tune_model(self, train_gen, val_gen, epochs=20):
+    def fine_tune_model(self, train_gen, val_gen, epochs=5):
         """
         Fine-tune the model by unfreezing some layers.
         """
@@ -429,10 +429,10 @@ def main():
     )
 
     # Train model
-    history = classifier.train_model(train_gen, val_gen, epochs=50)
+    history = classifier.train_model(train_gen, val_gen, epochs=15)
 
     # Fine-tune model
-    fine_tune_history = classifier.fine_tune_model(train_gen, val_gen, epochs=20)
+    fine_tune_history = classifier.fine_tune_model(train_gen, val_gen, epochs=5)
 
     # Plot training history
     classifier.plot_training_history()
