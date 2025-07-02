@@ -2,7 +2,7 @@ opencv-python
 pillow
 numpy
 matplotlib
-cv2
+opencv-python
 scikit-learn
 seaborn
 torch
