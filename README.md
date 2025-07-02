@@ -101,279 +101,526 @@ streamlit run streamlit_app.py
 <summary>Click to expand logs.txt</summary>
 
 ```
-(.venv) aayushagarwal-mac:ai-powered-image-classification aayushagarwal$ python3 train.py 
-Metal GPU found and will be used.
-Detected 102 classes: ['gerenuk', 'hawksbill', 'headphone', 'ant', 'butterfly', 'lamp', 'strawberry', 'water_lilly', 'chandelier', 'dragonfly', 'crab', 'pagoda', 'dollar_bill', 'emu', 'inline_skate', 'platypus', 'dalmatian', 'cup', 'airplanes', 'joshua_tree', 'cougar_body', 'grand_piano', 'trilobite', 'brontosaurus', 'wild_cat', 'pigeon', 'dolphin', 'soccer_ball', 'wrench', 'scorpion', 'flamingo_head', 'nautilus', 'accordion', 'cougar_face', 'pyramid', 'camera', 'barrel', 'schooner', 'cellphone', 'panda', 'revolver', 'lobster', 'menorah', 'lotus', 'stapler', 'crocodile', 'chair', 'helicopter', 'minaret', 'starfish', 'ceiling_fan', 'ketch', 'mayfly', 'wheelchair', 'bass', 'yin_yang', 'crocodile_head', 'saxophone', 'beaver', 'mandolin', 'bonsai', 'Leopards', 'car_side', 'ibis', 'electric_guitar', 'kangaroo', 'stegosaurus', 'ferry', 'snoopy', 'umbrella', 'rhino', 'okapi', 'watch', 'brain', 'gramophone', 'scissors', 'rooster', 'cannon', 'binocular', 'anchor', 'octopus', 'buddha', 'laptop', 'windsor_chair', 'hedgehog', 'pizza', 'euphonium', 'stop_sign', 'Motorbikes', 'sea_horse', 'flamingo', 'BACKGROUND_Google', 'ewer', 'garfield', 'crayfish', 'Faces_easy', 'Faces', 'sunflower', 'llama', 'elephant', 'tick', 'metronome']
-Model architecture:
-Model: "sequential"
-┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┓
-┃ Layer (type)                         ┃ Output Shape                ┃         Param # ┃
-┡━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━┩
-│ mobilenetv2_1.00_224 (Functional)    │ (None, 7, 7, 1280)          │       2,257,984 │
-├──────────────────────────────────────┼─────────────────────────────┼─────────────────┤
-│ global_average_pooling2d             │ (None, 1280)                │               0 │
-│ (GlobalAveragePooling2D)             │                             │                 │
-├──────────────────────────────────────┼─────────────────────────────┼─────────────────┤
-│ dropout (Dropout)                    │ (None, 1280)                │               0 │
-├──────────────────────────────────────┼─────────────────────────────┼─────────────────┤
-│ dense (Dense)                        │ (None, 512)                 │         655,872 │
-├──────────────────────────────────────┼─────────────────────────────┼─────────────────┤
-│ batch_normalization                  │ (None, 512)                 │           2,048 │
-│ (BatchNormalization)                 │                             │                 │
-├──────────────────────────────────────┼─────────────────────────────┼─────────────────┤
-│ dropout_1 (Dropout)                  │ (None, 512)                 │               0 │
-├──────────────────────────────────────┼─────────────────────────────┼─────────────────┤
-│ dense_1 (Dense)                      │ (None, 256)                 │         131,328 │
-├──────────────────────────────────────┼─────────────────────────────┼─────────────────┤
-│ batch_normalization_1                │ (None, 256)                 │           1,024 │
-│ (BatchNormalization)                 │                             │                 │
-├──────────────────────────────────────┼─────────────────────────────┼─────────────────┤
-│ dropout_2 (Dropout)                  │ (None, 256)                 │               0 │
-├──────────────────────────────────────┼─────────────────────────────┼─────────────────┤
-│ dense_2 (Dense)                      │ (None, 102)                 │          26,214 │
-└──────────────────────────────────────┴─────────────────────────────┴─────────────────┘
- Total params: 3,074,470 (11.73 MB)
- Trainable params: 814,950 (3.11 MB)
- Non-trainable params: 2,259,520 (8.62 MB)
-Found 6352 images belonging to 102 classes.
-Found 1326 images belonging to 102 classes.
-/Users/aayushagarwal/projects/ai-powered-image-classification/.venv/lib/python3.12/site-packages/keras/src/trainers/data_adapters/py_dataset_adapter.py:121: UserWarning: Your `PyDataset` class should call `super().__init__(**kwargs)` in its constructor. `**kwargs` can include `workers`, `use_multiprocessing`, `max_queue_size`. Do not pass these arguments to `fit()`, as they will be ignored.
-  self._warn_if_super_not_called()
-Epoch 1/15
-199/199 ━━━━━━━━━━━━━━━━━━━━ 0s 132ms/step - accuracy: 0.3423 - loss: 3.2144 - top_5_accuracy: 0.4995    
-Epoch 1: val_accuracy improved from -inf to 0.82278, saving model to best_model.keras
-
-Epoch 1: saving model to epoch_01_model.keras
-199/199 ━━━━━━━━━━━━━━━━━━━━ 34s 156ms/step - accuracy: 0.3431 - loss: 3.2100 - top_5_accuracy: 0.5004 - val_accuracy: 0.8228 - val_loss: 0.7543 - val_top_5_accuracy: 0.9555 - learning_rate: 0.0010
-Epoch 2/15
-199/199 ━━━━━━━━━━━━━━━━━━━━ 0s 131ms/step - accuracy: 0.7092 - loss: 1.2087 - top_5_accuracy: 0.8941 
-Epoch 2: val_accuracy improved from 0.82278 to 0.87029, saving model to best_model.keras
-
-Epoch 2: saving model to epoch_02_model.keras
-199/199 ━━━━━━━━━━━━━━━━━━━━ 29s 145ms/step - accuracy: 0.7093 - loss: 1.2082 - top_5_accuracy: 0.8942 - val_accuracy: 0.8703 - val_loss: 0.5407 - val_top_5_accuracy: 0.9661 - learning_rate: 0.0010
-Epoch 3/15
-199/199 ━━━━━━━━━━━━━━━━━━━━ 0s 132ms/step - accuracy: 0.7754 - loss: 0.8544 - top_5_accuracy: 0.9374 
-Epoch 3: val_accuracy improved from 0.87029 to 0.88763, saving model to best_model.keras
-
-Epoch 3: saving model to epoch_03_model.keras
-199/199 ━━━━━━━━━━━━━━━━━━━━ 29s 145ms/step - accuracy: 0.7754 - loss: 0.8544 - top_5_accuracy: 0.9374 - val_accuracy: 0.8876 - val_loss: 0.4327 - val_top_5_accuracy: 0.9796 - learning_rate: 0.0010
-Epoch 4/15
-199/199 ━━━━━━━━━━━━━━━━━━━━ 0s 132ms/step - accuracy: 0.7953 - loss: 0.7627 - top_5_accuracy: 0.9482 
-Epoch 4: val_accuracy did not improve from 0.88763
-
-Epoch 4: saving model to epoch_04_model.keras
-199/199 ━━━━━━━━━━━━━━━━━━━━ 29s 145ms/step - accuracy: 0.7953 - loss: 0.7627 - top_5_accuracy: 0.9482 - val_accuracy: 0.8816 - val_loss: 0.4448 - val_top_5_accuracy: 0.9698 - learning_rate: 0.0010
-Epoch 5/15
-199/199 ━━━━━━━━━━━━━━━━━━━━ 0s 133ms/step - accuracy: 0.8200 - loss: 0.6581 - top_5_accuracy: 0.9590 
-Epoch 5: val_accuracy improved from 0.88763 to 0.89819, saving model to best_model.keras
-
-Epoch 5: saving model to epoch_05_model.keras
-199/199 ━━━━━━━━━━━━━━━━━━━━ 29s 146ms/step - accuracy: 0.8200 - loss: 0.6581 - top_5_accuracy: 0.9590 - val_accuracy: 0.8982 - val_loss: 0.3881 - val_top_5_accuracy: 0.9789 - learning_rate: 0.0010
-Epoch 6/15
-199/199 ━━━━━━━━━━━━━━━━━━━━ 0s 131ms/step - accuracy: 0.8296 - loss: 0.6124 - top_5_accuracy: 0.9644 
-Epoch 6: val_accuracy improved from 0.89819 to 0.89894, saving model to best_model.keras
-
-Epoch 6: saving model to epoch_06_model.keras
-199/199 ━━━━━━━━━━━━━━━━━━━━ 29s 145ms/step - accuracy: 0.8296 - loss: 0.6124 - top_5_accuracy: 0.9644 - val_accuracy: 0.8989 - val_loss: 0.3721 - val_top_5_accuracy: 0.9811 - learning_rate: 0.0010
-Epoch 7/15
-199/199 ━━━━━━━━━━━━━━━━━━━━ 0s 132ms/step - accuracy: 0.8348 - loss: 0.5642 - top_5_accuracy: 0.9667 
-Epoch 7: val_accuracy did not improve from 0.89894
-
-Epoch 7: saving model to epoch_07_model.keras
-199/199 ━━━━━━━━━━━━━━━━━━━━ 29s 145ms/step - accuracy: 0.8347 - loss: 0.5643 - top_5_accuracy: 0.9667 - val_accuracy: 0.8967 - val_loss: 0.3718 - val_top_5_accuracy: 0.9796 - learning_rate: 0.0010
-Epoch 8/15
-199/199 ━━━━━━━━━━━━━━━━━━━━ 0s 137ms/step - accuracy: 0.8386 - loss: 0.5747 - top_5_accuracy: 0.9663 
-Epoch 8: val_accuracy did not improve from 0.89894
-
-Epoch 8: saving model to epoch_08_model.keras
-199/199 ━━━━━━━━━━━━━━━━━━━━ 30s 151ms/step - accuracy: 0.8387 - loss: 0.5745 - top_5_accuracy: 0.9663 - val_accuracy: 0.8982 - val_loss: 0.3496 - val_top_5_accuracy: 0.9857 - learning_rate: 0.0010
-Epoch 9/15
-199/199 ━━━━━━━━━━━━━━━━━━━━ 0s 143ms/step - accuracy: 0.8408 - loss: 0.5507 - top_5_accuracy: 0.9676 
-Epoch 9: val_accuracy improved from 0.89894 to 0.90724, saving model to best_model.keras
-
-Epoch 9: saving model to epoch_09_model.keras
-199/199 ━━━━━━━━━━━━━━━━━━━━ 31s 157ms/step - accuracy: 0.8408 - loss: 0.5507 - top_5_accuracy: 0.9676 - val_accuracy: 0.9072 - val_loss: 0.3313 - val_top_5_accuracy: 0.9872 - learning_rate: 0.0010
-Epoch 10/15
-199/199 ━━━━━━━━━━━━━━━━━━━━ 0s 133ms/step - accuracy: 0.8646 - loss: 0.5163 - top_5_accuracy: 0.9723 
-Epoch 10: val_accuracy did not improve from 0.90724
-
-Epoch 10: saving model to epoch_10_model.keras
-199/199 ━━━━━━━━━━━━━━━━━━━━ 29s 146ms/step - accuracy: 0.8645 - loss: 0.5163 - top_5_accuracy: 0.9723 - val_accuracy: 0.8929 - val_loss: 0.3450 - val_top_5_accuracy: 0.9834 - learning_rate: 0.0010
-Epoch 11/15
-199/199 ━━━━━━━━━━━━━━━━━━━━ 0s 130ms/step - accuracy: 0.8652 - loss: 0.4972 - top_5_accuracy: 0.9708 
-Epoch 11: val_accuracy did not improve from 0.90724
-
-Epoch 11: saving model to epoch_11_model.keras
-199/199 ━━━━━━━━━━━━━━━━━━━━ 28s 142ms/step - accuracy: 0.8651 - loss: 0.4972 - top_5_accuracy: 0.9708 - val_accuracy: 0.9057 - val_loss: 0.3470 - val_top_5_accuracy: 0.9834 - learning_rate: 0.0010
-Epoch 12/15
-199/199 ━━━━━━━━━━━━━━━━━━━━ 0s 131ms/step - accuracy: 0.8682 - loss: 0.4617 - top_5_accuracy: 0.9774 
-Epoch 12: val_accuracy did not improve from 0.90724
-
-Epoch 12: saving model to epoch_12_model.keras
-199/199 ━━━━━━━━━━━━━━━━━━━━ 29s 144ms/step - accuracy: 0.8682 - loss: 0.4617 - top_5_accuracy: 0.9774 - val_accuracy: 0.9012 - val_loss: 0.3335 - val_top_5_accuracy: 0.9819 - learning_rate: 0.0010
-Epoch 13/15
-199/199 ━━━━━━━━━━━━━━━━━━━━ 0s 144ms/step - accuracy: 0.8625 - loss: 0.4484 - top_5_accuracy: 0.9775 
-Epoch 13: val_accuracy did not improve from 0.90724
-
-Epoch 13: saving model to epoch_13_model.keras
-199/199 ━━━━━━━━━━━━━━━━━━━━ 31s 158ms/step - accuracy: 0.8625 - loss: 0.4485 - top_5_accuracy: 0.9775 - val_accuracy: 0.8952 - val_loss: 0.3479 - val_top_5_accuracy: 0.9864 - learning_rate: 0.0010
-Epoch 14/15
-199/199 ━━━━━━━━━━━━━━━━━━━━ 0s 142ms/step - accuracy: 0.8638 - loss: 0.4432 - top_5_accuracy: 0.9748 
-Epoch 14: val_accuracy did not improve from 0.90724
-
-Epoch 14: saving model to epoch_14_model.keras
-199/199 ━━━━━━━━━━━━━━━━━━━━ 31s 154ms/step - accuracy: 0.8638 - loss: 0.4433 - top_5_accuracy: 0.9748 - val_accuracy: 0.8974 - val_loss: 0.3529 - val_top_5_accuracy: 0.9842 - learning_rate: 0.0010
-Epoch 15/15
-199/199 ━━━━━━━━━━━━━━━━━━━━ 0s 132ms/step - accuracy: 0.8711 - loss: 0.4275 - top_5_accuracy: 0.9789 
-Epoch 15: val_accuracy did not improve from 0.90724
-
-Epoch 15: saving model to epoch_15_model.keras
-199/199 ━━━━━━━━━━━━━━━━━━━━ 29s 144ms/step - accuracy: 0.8712 - loss: 0.4274 - top_5_accuracy: 0.9789 - val_accuracy: 0.9042 - val_loss: 0.3216 - val_top_5_accuracy: 0.9849 - learning_rate: 2.0000e-04
-Epoch 1/5
-199/199 ━━━━━━━━━━━━━━━━━━━━ 38s 159ms/step - accuracy: 0.8115 - loss: 0.6573 - top_5_accuracy: 0.9584 - val_accuracy: 0.8959 - val_loss: 0.3889 - val_top_5_accuracy: 0.9729
-Epoch 2/5
-199/199 ━━━━━━━━━━━━━━━━━━━━ 29s 147ms/step - accuracy: 0.8293 - loss: 0.5942 - top_5_accuracy: 0.9645 - val_accuracy: 0.9012 - val_loss: 0.3782 - val_top_5_accuracy: 0.9751
-Epoch 3/5
-199/199 ━━━━━━━━━━━━━━━━━━━━ 29s 147ms/step - accuracy: 0.8419 - loss: 0.5469 - top_5_accuracy: 0.9669 - val_accuracy: 0.9020 - val_loss: 0.3599 - val_top_5_accuracy: 0.9789
-Epoch 4/5
-199/199 ━━━━━━━━━━━━━━━━━━━━ 30s 148ms/step - accuracy: 0.8522 - loss: 0.5308 - top_5_accuracy: 0.9685 - val_accuracy: 0.9035 - val_loss: 0.3467 - val_top_5_accuracy: 0.9796
-Epoch 5/5
-199/199 ━━━━━━━━━━━━━━━━━━━━ 29s 147ms/step - accuracy: 0.8533 - loss: 0.5142 - top_5_accuracy: 0.9697 - val_accuracy: 0.9050 - val_loss: 0.3336 - val_top_5_accuracy: 0.9834
-2025-07-02 01:13:46.169 Python[65224:4133355] The class 'NSSavePanel' overrides the method identifier.  This method is implemented by class 'NSWindow'
-Found 1466 images belonging to 102 classes.
-Found 1466 images belonging to 102 classes.
-46/46 ━━━━━━━━━━━━━━━━━━━━ 9s 171ms/step
+Using device: mps
+Detected 102 classes: ['BACKGROUND_Google', 'Faces', 'Faces_easy', 'Leopards', 'Motorbikes', 'accordion', 'airplanes', 'anchor', 'ant', 'barrel', 'bass', 'beaver', 'binocular', 'bonsai', 'brain', 'brontosaurus', 'buddha', 'butterfly', 'camera', 'cannon', 'car_side', 'ceiling_fan', 'cellphone', 'chair', 'chandelier', 'cougar_body', 'cougar_face', 'crab', 'crayfish', 'crocodile', 'crocodile_head', 'cup', 'dalmatian', 'dollar_bill', 'dolphin', 'dragonfly', 'electric_guitar', 'elephant', 'emu', 'euphonium', 'ewer', 'ferry', 'flamingo', 'flamingo_head', 'garfield', 'gerenuk', 'gramophone', 'grand_piano', 'hawksbill', 'headphone', 'hedgehog', 'helicopter', 'ibis', 'inline_skate', 'joshua_tree', 'kangaroo', 'ketch', 'lamp', 'laptop', 'llama', 'lobster', 'lotus', 'mandolin', 'mayfly', 'menorah', 'metronome', 'minaret', 'nautilus', 'octopus', 'okapi', 'pagoda', 'panda', 'pigeon', 'pizza', 'platypus', 'pyramid', 'revolver', 'rhino', 'rooster', 'saxophone', 'schooner', 'scissors', 'scorpion', 'sea_horse', 'snoopy', 'soccer_ball', 'stapler', 'starfish', 'stegosaurus', 'stop_sign', 'strawberry', 'sunflower', 'tick', 'trilobite', 'umbrella', 'watch', 'water_lilly', 'wheelchair', 'wild_cat', 'windsor_chair', 'wrench', 'yin_yang']
+AdvancedImageClassifierTorch(
+  (base): MobileNetV2(
+    (features): Sequential(
+      (0): Conv2dNormActivation(
+        (0): Conv2d(3, 32, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), bias=False)
+        (1): BatchNorm2d(32, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (2): ReLU6(inplace=True)
+      )
+      (1): InvertedResidual(
+        (conv): Sequential(
+          (0): Conv2dNormActivation(
+            (0): Conv2d(32, 32, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=32, bias=False)
+            (1): BatchNorm2d(32, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+            (2): ReLU6(inplace=True)
+          )
+          (1): Conv2d(32, 16, kernel_size=(1, 1), stride=(1, 1), bias=False)
+          (2): BatchNorm2d(16, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        )
+      )
+      (2): InvertedResidual(
+        (conv): Sequential(
+          (0): Conv2dNormActivation(
+            (0): Conv2d(16, 96, kernel_size=(1, 1), stride=(1, 1), bias=False)
+            (1): BatchNorm2d(96, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+            (2): ReLU6(inplace=True)
+          )
+          (1): Conv2dNormActivation(
+            (0): Conv2d(96, 96, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), groups=96, bias=False)
+            (1): BatchNorm2d(96, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+            (2): ReLU6(inplace=True)
+          )
+          (2): Conv2d(96, 24, kernel_size=(1, 1), stride=(1, 1), bias=False)
+          (3): BatchNorm2d(24, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        )
+      )
+      (3): InvertedResidual(
+        (conv): Sequential(
+          (0): Conv2dNormActivation(
+            (0): Conv2d(24, 144, kernel_size=(1, 1), stride=(1, 1), bias=False)
+            (1): BatchNorm2d(144, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+            (2): ReLU6(inplace=True)
+          )
+          (1): Conv2dNormActivation(
+            (0): Conv2d(144, 144, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=144, bias=False)
+            (1): BatchNorm2d(144, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+            (2): ReLU6(inplace=True)
+          )
+          (2): Conv2d(144, 24, kernel_size=(1, 1), stride=(1, 1), bias=False)
+          (3): BatchNorm2d(24, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        )
+      )
+      (4): InvertedResidual(
+        (conv): Sequential(
+          (0): Conv2dNormActivation(
+            (0): Conv2d(24, 144, kernel_size=(1, 1), stride=(1, 1), bias=False)
+            (1): BatchNorm2d(144, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+            (2): ReLU6(inplace=True)
+          )
+          (1): Conv2dNormActivation(
+            (0): Conv2d(144, 144, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), groups=144, bias=False)
+            (1): BatchNorm2d(144, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+            (2): ReLU6(inplace=True)
+          )
+          (2): Conv2d(144, 32, kernel_size=(1, 1), stride=(1, 1), bias=False)
+          (3): BatchNorm2d(32, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        )
+      )
+      (5): InvertedResidual(
+        (conv): Sequential(
+          (0): Conv2dNormActivation(
+            (0): Conv2d(32, 192, kernel_size=(1, 1), stride=(1, 1), bias=False)
+            (1): BatchNorm2d(192, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+            (2): ReLU6(inplace=True)
+          )
+          (1): Conv2dNormActivation(
+            (0): Conv2d(192, 192, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=192, bias=False)
+            (1): BatchNorm2d(192, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+            (2): ReLU6(inplace=True)
+          )
+          (2): Conv2d(192, 32, kernel_size=(1, 1), stride=(1, 1), bias=False)
+          (3): BatchNorm2d(32, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        )
+      )
+      (6): InvertedResidual(
+        (conv): Sequential(
+          (0): Conv2dNormActivation(
+            (0): Conv2d(32, 192, kernel_size=(1, 1), stride=(1, 1), bias=False)
+            (1): BatchNorm2d(192, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+            (2): ReLU6(inplace=True)
+          )
+          (1): Conv2dNormActivation(
+            (0): Conv2d(192, 192, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=192, bias=False)
+            (1): BatchNorm2d(192, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+            (2): ReLU6(inplace=True)
+          )
+          (2): Conv2d(192, 32, kernel_size=(1, 1), stride=(1, 1), bias=False)
+          (3): BatchNorm2d(32, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        )
+      )
+      (7): InvertedResidual(
+        (conv): Sequential(
+          (0): Conv2dNormActivation(
+            (0): Conv2d(32, 192, kernel_size=(1, 1), stride=(1, 1), bias=False)
+            (1): BatchNorm2d(192, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+            (2): ReLU6(inplace=True)
+          )
+          (1): Conv2dNormActivation(
+            (0): Conv2d(192, 192, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), groups=192, bias=False)
+            (1): BatchNorm2d(192, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+            (2): ReLU6(inplace=True)
+          )
+          (2): Conv2d(192, 64, kernel_size=(1, 1), stride=(1, 1), bias=False)
+          (3): BatchNorm2d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        )
+      )
+      (8): InvertedResidual(
+        (conv): Sequential(
+          (0): Conv2dNormActivation(
+            (0): Conv2d(64, 384, kernel_size=(1, 1), stride=(1, 1), bias=False)
+            (1): BatchNorm2d(384, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+            (2): ReLU6(inplace=True)
+          )
+          (1): Conv2dNormActivation(
+            (0): Conv2d(384, 384, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=384, bias=False)
+            (1): BatchNorm2d(384, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+            (2): ReLU6(inplace=True)
+          )
+          (2): Conv2d(384, 64, kernel_size=(1, 1), stride=(1, 1), bias=False)
+          (3): BatchNorm2d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        )
+      )
+      (9): InvertedResidual(
+        (conv): Sequential(
+          (0): Conv2dNormActivation(
+            (0): Conv2d(64, 384, kernel_size=(1, 1), stride=(1, 1), bias=False)
+            (1): BatchNorm2d(384, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+            (2): ReLU6(inplace=True)
+          )
+          (1): Conv2dNormActivation(
+            (0): Conv2d(384, 384, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=384, bias=False)
+            (1): BatchNorm2d(384, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+            (2): ReLU6(inplace=True)
+          )
+          (2): Conv2d(384, 64, kernel_size=(1, 1), stride=(1, 1), bias=False)
+          (3): BatchNorm2d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        )
+      )
+      (10): InvertedResidual(
+        (conv): Sequential(
+          (0): Conv2dNormActivation(
+            (0): Conv2d(64, 384, kernel_size=(1, 1), stride=(1, 1), bias=False)
+            (1): BatchNorm2d(384, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+            (2): ReLU6(inplace=True)
+          )
+          (1): Conv2dNormActivation(
+            (0): Conv2d(384, 384, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=384, bias=False)
+            (1): BatchNorm2d(384, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+            (2): ReLU6(inplace=True)
+          )
+          (2): Conv2d(384, 64, kernel_size=(1, 1), stride=(1, 1), bias=False)
+          (3): BatchNorm2d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        )
+      )
+      (11): InvertedResidual(
+        (conv): Sequential(
+          (0): Conv2dNormActivation(
+            (0): Conv2d(64, 384, kernel_size=(1, 1), stride=(1, 1), bias=False)
+            (1): BatchNorm2d(384, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+            (2): ReLU6(inplace=True)
+          )
+          (1): Conv2dNormActivation(
+            (0): Conv2d(384, 384, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=384, bias=False)
+            (1): BatchNorm2d(384, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+            (2): ReLU6(inplace=True)
+          )
+          (2): Conv2d(384, 96, kernel_size=(1, 1), stride=(1, 1), bias=False)
+          (3): BatchNorm2d(96, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        )
+      )
+      (12): InvertedResidual(
+        (conv): Sequential(
+          (0): Conv2dNormActivation(
+            (0): Conv2d(96, 576, kernel_size=(1, 1), stride=(1, 1), bias=False)
+            (1): BatchNorm2d(576, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+            (2): ReLU6(inplace=True)
+          )
+          (1): Conv2dNormActivation(
+            (0): Conv2d(576, 576, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=576, bias=False)
+            (1): BatchNorm2d(576, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+            (2): ReLU6(inplace=True)
+          )
+          (2): Conv2d(576, 96, kernel_size=(1, 1), stride=(1, 1), bias=False)
+          (3): BatchNorm2d(96, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        )
+      )
+      (13): InvertedResidual(
+        (conv): Sequential(
+          (0): Conv2dNormActivation(
+            (0): Conv2d(96, 576, kernel_size=(1, 1), stride=(1, 1), bias=False)
+            (1): BatchNorm2d(576, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+            (2): ReLU6(inplace=True)
+          )
+          (1): Conv2dNormActivation(
+            (0): Conv2d(576, 576, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=576, bias=False)
+            (1): BatchNorm2d(576, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+            (2): ReLU6(inplace=True)
+          )
+          (2): Conv2d(576, 96, kernel_size=(1, 1), stride=(1, 1), bias=False)
+          (3): BatchNorm2d(96, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        )
+      )
+      (14): InvertedResidual(
+        (conv): Sequential(
+          (0): Conv2dNormActivation(
+            (0): Conv2d(96, 576, kernel_size=(1, 1), stride=(1, 1), bias=False)
+            (1): BatchNorm2d(576, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+            (2): ReLU6(inplace=True)
+          )
+          (1): Conv2dNormActivation(
+            (0): Conv2d(576, 576, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), groups=576, bias=False)
+            (1): BatchNorm2d(576, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+            (2): ReLU6(inplace=True)
+          )
+          (2): Conv2d(576, 160, kernel_size=(1, 1), stride=(1, 1), bias=False)
+          (3): BatchNorm2d(160, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        )
+      )
+      (15): InvertedResidual(
+        (conv): Sequential(
+          (0): Conv2dNormActivation(
+            (0): Conv2d(160, 960, kernel_size=(1, 1), stride=(1, 1), bias=False)
+            (1): BatchNorm2d(960, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+            (2): ReLU6(inplace=True)
+          )
+          (1): Conv2dNormActivation(
+            (0): Conv2d(960, 960, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=960, bias=False)
+            (1): BatchNorm2d(960, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+            (2): ReLU6(inplace=True)
+          )
+          (2): Conv2d(960, 160, kernel_size=(1, 1), stride=(1, 1), bias=False)
+          (3): BatchNorm2d(160, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        )
+      )
+      (16): InvertedResidual(
+        (conv): Sequential(
+          (0): Conv2dNormActivation(
+            (0): Conv2d(160, 960, kernel_size=(1, 1), stride=(1, 1), bias=False)
+            (1): BatchNorm2d(960, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+            (2): ReLU6(inplace=True)
+          )
+          (1): Conv2dNormActivation(
+            (0): Conv2d(960, 960, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=960, bias=False)
+            (1): BatchNorm2d(960, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+            (2): ReLU6(inplace=True)
+          )
+          (2): Conv2d(960, 160, kernel_size=(1, 1), stride=(1, 1), bias=False)
+          (3): BatchNorm2d(160, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        )
+      )
+      (17): InvertedResidual(
+        (conv): Sequential(
+          (0): Conv2dNormActivation(
+            (0): Conv2d(160, 960, kernel_size=(1, 1), stride=(1, 1), bias=False)
+            (1): BatchNorm2d(960, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+            (2): ReLU6(inplace=True)
+          )
+          (1): Conv2dNormActivation(
+            (0): Conv2d(960, 960, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=960, bias=False)
+            (1): BatchNorm2d(960, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+            (2): ReLU6(inplace=True)
+          )
+          (2): Conv2d(960, 320, kernel_size=(1, 1), stride=(1, 1), bias=False)
+          (3): BatchNorm2d(320, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        )
+      )
+      (18): Conv2dNormActivation(
+        (0): Conv2d(320, 1280, kernel_size=(1, 1), stride=(1, 1), bias=False)
+        (1): BatchNorm2d(1280, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (2): ReLU6(inplace=True)
+      )
+    )
+    (classifier): Identity()
+  )
+  (classifier): Sequential(
+    (0): Dropout(p=0.3, inplace=False)
+    (1): Linear(in_features=1280, out_features=512, bias=True)
+    (2): ReLU()
+    (3): BatchNorm1d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (4): Dropout(p=0.5, inplace=False)
+    (5): Linear(in_features=512, out_features=256, bias=True)
+    (6): ReLU()
+    (7): BatchNorm1d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (8): Dropout(p=0.3, inplace=False)
+    (9): Linear(in_features=256, out_features=102, bias=True)
+  )
+)
+Epoch 1 Training:   0%|                                                                                                                 | 0/100 [00:00<?, ?it/s]Using device: mps
+Using device: mps
+Epoch 1 Validation:   0%|                                                                                                                | 0/21 [00:00<?, ?it/s]Using device: mps
+Using device: mps
+Epoch 1/10 - Train Loss: 2.8959, Acc: 0.3778 | Val Loss: 1.8996, Acc: 0.5256                                                                                    
+Saved best model to best_model.pt
+Epoch 2 Training:   0%|                                                                                                                 | 0/100 [00:00<?, ?it/s]Using device: mps
+Using device: mps
+Epoch 2 Validation:   0%|                                                                                                                | 0/21 [00:00<?, ?it/s]Using device: mps
+Using device: mps
+Epoch 2/10 - Train Loss: 1.7790, Acc: 0.5617 | Val Loss: 1.3430, Acc: 0.6440                                                                                    
+Saved best model to best_model.pt
+Epoch 3 Training:   0%|                                                                                                                 | 0/100 [00:00<?, ?it/s]Using device: mps
+Using device: mps
+Epoch 3 Validation:   0%|                                                                                                                | 0/21 [00:00<?, ?it/s]Using device: mps
+Using device: mps
+Epoch 3/10 - Train Loss: 1.3464, Acc: 0.6489 | Val Loss: 0.9991, Acc: 0.7262                                                                                    
+Saved best model to best_model.pt
+Epoch 4 Training:   0%|                                                                                                                 | 0/100 [00:00<?, ?it/s]Using device: mps
+Using device: mps
+Epoch 4 Validation:   0%|                                                                                                                | 0/21 [00:00<?, ?it/s]Using device: mps
+Using device: mps
+Epoch 4/10 - Train Loss: 1.0212, Acc: 0.7207 | Val Loss: 0.9400, Acc: 0.7534                                                                                    
+Saved best model to best_model.pt
+Epoch 5 Training:   0%|                                                                                                                 | 0/100 [00:00<?, ?it/s]Using device: mps
+Using device: mps
+Epoch 5 Validation:   0%|                                                                                                                | 0/21 [00:00<?, ?it/s]Using device: mps
+Using device: mps
+Epoch 5/10 - Train Loss: 0.8888, Acc: 0.7544 | Val Loss: 0.8151, Acc: 0.7753                                                                                    
+Saved best model to best_model.pt
+Epoch 6 Training:   0%|                                                                                                                 | 0/100 [00:00<?, ?it/s]Using device: mps
+Using device: mps
+Epoch 6 Validation:   0%|                                                                                                                | 0/21 [00:00<?, ?it/s]Using device: mps
+Using device: mps
+Epoch 6/10 - Train Loss: 0.7613, Acc: 0.7848 | Val Loss: 1.1601, Acc: 0.7036                                                                                    
+Epoch 7 Training:   0%|                                                                                                                 | 0/100 [00:00<?, ?it/s]Using device: mps
+Using device: mps
+Epoch 7 Validation:   0%|                                                                                                                | 0/21 [00:00<?, ?it/s]Using device: mps
+Using device: mps
+Epoch 7/10 - Train Loss: 0.7654, Acc: 0.7787 | Val Loss: 0.6915, Acc: 0.8145                                                                                    
+Saved best model to best_model.pt
+Epoch 8 Training:   0%|                                                                                                                 | 0/100 [00:00<?, ?it/s]Using device: mps
+Using device: mps
+Epoch 8 Validation:   0%|                                                                                                                         | 0/21 [00:00<?, ?it/s]Using device: mps
+Using device: mps
+Epoch 8/10 - Train Loss: 0.6180, Acc: 0.8237 | Val Loss: 0.6870, Acc: 0.8167                                                                                             
+Saved best model to best_model.pt
+Epoch 9 Training:   0%|                                                                                                                          | 0/100 [00:00<?, ?it/s]Using device: mps
+Using device: mps
+Epoch 9 Validation:   0%|                                                                                                                         | 0/21 [00:00<?, ?it/s]Using device: mps
+Using device: mps
+Epoch 9/10 - Train Loss: 0.5442, Acc: 0.8404 | Val Loss: 0.6966, Acc: 0.8303                                                                                             
+Saved best model to best_model.pt
+Epoch 10 Training:   0%|                                                                                                                         | 0/100 [00:00<?, ?it/s]Using device: mps
+Using device: mps
+Epoch 10 Validation:   0%|                                                                                                                        | 0/21 [00:00<?, ?it/s]Using device: mps
+Using device: mps
+Epoch 10/10 - Train Loss: 0.4962, Acc: 0.8522 | Val Loss: 0.6021, Acc: 0.8348                                                                                            
+Saved best model to best_model.pt
+Epoch 1 Training:   0%|                                                                                                                          | 0/100 [00:00<?, ?it/s]Python(28297) MallocStackLogging: can't turn off malloc stack logging because it was not enabled.
+Using device: mps
+Python(28303) MallocStackLogging: can't turn off malloc stack logging because it was not enabled.
+Using device: mps
+Epoch 1 Validation:   0%|                                                                                                                         | 0/21 [00:00<?, ?it/s]Python(28520) MallocStackLogging: can't turn off malloc stack logging because it was not enabled.
+Python(28540) MallocStackLogging: can't turn off malloc stack logging because it was not enabled.
+Using device: mps
+Using device: mps
+Epoch 1/5 - Train Loss: 0.2937, Acc: 0.9148 | Val Loss: 0.4251, Acc: 0.8778                                                                                              
+Saved best model to best_finetuned_model.pt
+Epoch 2 Training:   0%|                                                                                                                          | 0/100 [00:00<?, ?it/s]Python(28860) MallocStackLogging: can't turn off malloc stack logging because it was not enabled.
+Using device: mps
+Python(28868) MallocStackLogging: can't turn off malloc stack logging because it was not enabled.
+Using device: mps
+Epoch 2 Validation:   0%|                                                                                                                         | 0/21 [00:00<?, ?it/s]Python(29761) MallocStackLogging: can't turn off malloc stack logging because it was not enabled.
+Python(29762) MallocStackLogging: can't turn off malloc stack logging because it was not enabled.
+Using device: mps
+Using device: mps
+Epoch 2/5 - Train Loss: 0.2060, Acc: 0.9403 | Val Loss: 0.4110, Acc: 0.8929                                                                                              
+Saved best model to best_finetuned_model.pt
+Epoch 3 Training:   0%|                                                                                                                          | 0/100 [00:00<?, ?it/s]Python(29787) MallocStackLogging: can't turn off malloc stack logging because it was not enabled.
+Using device: mps
+Python(29794) MallocStackLogging: can't turn off malloc stack logging because it was not enabled.
+Using device: mps
+Epoch 3 Validation:   0%|                                                                                                                         | 0/21 [00:00<?, ?it/s]Python(30372) MallocStackLogging: can't turn off malloc stack logging because it was not enabled.
+Python(30373) MallocStackLogging: can't turn off malloc stack logging because it was not enabled.
+Using device: mps
+Using device: mps
+Epoch 3/5 - Train Loss: 0.1718, Acc: 0.9521 | Val Loss: 0.3973, Acc: 0.8937                                                                                              
+Saved best model to best_finetuned_model.pt
+Epoch 4 Training:   0%|                                                                                                                          | 0/100 [00:00<?, ?it/s]Python(30397) MallocStackLogging: can't turn off malloc stack logging because it was not enabled.
+Using device: mps
+Python(30780) MallocStackLogging: can't turn off malloc stack logging because it was not enabled.
+Using device: mps
+Epoch 4 Validation:   0%|                                                                                                                         | 0/21 [00:00<?, ?it/s]Python(31030) MallocStackLogging: can't turn off malloc stack logging because it was not enabled.
+Python(31031) MallocStackLogging: can't turn off malloc stack logging because it was not enabled.
+Using device: mps
+Using device: mps
+Epoch 4/5 - Train Loss: 0.1502, Acc: 0.9595 | Val Loss: 0.3914, Acc: 0.8952                                                                                              
+Saved best model to best_finetuned_model.pt
+Epoch 5 Training:   0%|                                                                                                                          | 0/100 [00:00<?, ?it/s]Python(31428) MallocStackLogging: can't turn off malloc stack logging because it was not enabled.
+Using device: mps
+Python(31435) MallocStackLogging: can't turn off malloc stack logging because it was not enabled.
+Using device: mps
+Epoch 5 Validation:   0%|                                                                                                                         | 0/21 [00:00<?, ?it/s]Python(31909) MallocStackLogging: can't turn off malloc stack logging because it was not enabled.
+Python(31914) MallocStackLogging: can't turn off malloc stack logging because it was not enabled.
+Using device: mps
+Using device: mps
+Epoch 5/5 - Train Loss: 0.1351, Acc: 0.9654 | Val Loss: 0.3941, Acc: 0.8929                                                                                              
+Python(31928) MallocStackLogging: can't turn off malloc stack logging because it was not enabled.
+Python(31929) MallocStackLogging: can't turn off malloc stack logging because it was not enabled.
+Using device: mps
+Using device: mps
 Classification Report:
                    precision    recall  f1-score   support
 
-BACKGROUND_Google       0.08      0.06      0.06        71
-            Faces       0.09      0.09      0.09        66
-       Faces_easy       0.03      0.03      0.03        66
-         Leopards       0.03      0.03      0.03        30
-       Motorbikes       0.05      0.05      0.05       121
-        accordion       0.00      0.00      0.00         9
-        airplanes       0.02      0.03      0.02       120
-           anchor       0.00      0.00      0.00         7
-              ant       0.00      0.00      0.00         7
-           barrel       0.00      0.00      0.00         8
-             bass       0.00      0.00      0.00         9
-           beaver       0.00      0.00      0.00         8
-        binocular       0.00      0.00      0.00         6
-           bonsai       0.00      0.00      0.00        20
-            brain       0.00      0.00      0.00        16
-     brontosaurus       0.00      0.00      0.00         7
-           buddha       0.00      0.00      0.00        14
-        butterfly       0.08      0.07      0.07        15
-           camera       0.00      0.00      0.00         8
-           cannon       0.00      0.00      0.00         7
-         car_side       0.00      0.00      0.00        19
-      ceiling_fan       0.00      0.00      0.00         8
-        cellphone       0.00      0.00      0.00        10
-            chair       0.00      0.00      0.00        10
-       chandelier       0.00      0.00      0.00        17
-      cougar_body       0.00      0.00      0.00         8
-      cougar_face       0.00      0.00      0.00        11
-             crab       0.00      0.00      0.00        12
-         crayfish       0.00      0.00      0.00        11
-        crocodile       0.00      0.00      0.00         8
-   crocodile_head       0.00      0.00      0.00         9
-              cup       0.00      0.00      0.00        10
-        dalmatian       0.00      0.00      0.00        11
-      dollar_bill       0.00      0.00      0.00         9
-          dolphin       0.00      0.00      0.00        11
-        dragonfly       0.00      0.00      0.00        11
-  electric_guitar       0.00      0.00      0.00        12
-         elephant       0.00      0.00      0.00        11
-              emu       0.00      0.00      0.00         9
-        euphonium       0.00      0.00      0.00        11
-             ewer       0.00      0.00      0.00        14
-            ferry       0.00      0.00      0.00        11
-         flamingo       0.00      0.00      0.00        11
-    flamingo_head       0.00      0.00      0.00         8
-         garfield       0.00      0.00      0.00         6
-          gerenuk       0.00      0.00      0.00         6
-       gramophone       0.00      0.00      0.00         9
-      grand_piano       0.06      0.06      0.06        16
-        hawksbill       0.00      0.00      0.00        15
-        headphone       0.00      0.00      0.00         7
-         hedgehog       0.00      0.00      0.00         9
-       helicopter       0.00      0.00      0.00        14
-             ibis       0.00      0.00      0.00        12
-     inline_skate       0.00      0.00      0.00         6
-      joshua_tree       0.08      0.09      0.08        11
-         kangaroo       0.00      0.00      0.00        14
-            ketch       0.05      0.06      0.05        18
-             lamp       0.00      0.00      0.00        10
-           laptop       0.00      0.00      0.00        13
-            llama       0.00      0.00      0.00        13
-          lobster       0.00      0.00      0.00         7
-            lotus       0.00      0.00      0.00        11
-         mandolin       0.00      0.00      0.00         7
-           mayfly       0.20      0.17      0.18         6
-          menorah       0.00      0.00      0.00        14
-        metronome       0.00      0.00      0.00         6
-          minaret       0.00      0.00      0.00        12
-         nautilus       0.00      0.00      0.00         9
-          octopus       0.00      0.00      0.00         6
-            okapi       0.00      0.00      0.00         7
-           pagoda       0.00      0.00      0.00         8
-            panda       0.00      0.00      0.00         7
-           pigeon       0.00      0.00      0.00         8
-            pizza       0.00      0.00      0.00         9
-         platypus       0.00      0.00      0.00         6
-          pyramid       0.00      0.00      0.00        10
-         revolver       0.00      0.00      0.00        13
-            rhino       0.00      0.00      0.00        10
-          rooster       0.00      0.00      0.00         8
-        saxophone       0.00      0.00      0.00         6
-         schooner       0.00      0.00      0.00        10
-         scissors       0.00      0.00      0.00         7
-         scorpion       0.06      0.07      0.07        14
-        sea_horse       0.00      0.00      0.00        10
-           snoopy       0.00      0.00      0.00         6
-      soccer_ball       0.00      0.00      0.00        11
-          stapler       0.00      0.00      0.00         8
-         starfish       0.00      0.00      0.00        14
-      stegosaurus       0.00      0.00      0.00        10
-        stop_sign       0.00      0.00      0.00        11
-       strawberry       0.00      0.00      0.00         6
-        sunflower       0.00      0.00      0.00        14
-             tick       0.00      0.00      0.00         8
-        trilobite       0.00      0.00      0.00        14
-         umbrella       0.00      0.00      0.00        12
-            watch       0.02      0.03      0.03        37
-      water_lilly       0.00      0.00      0.00         7
-       wheelchair       0.00      0.00      0.00        10
-         wild_cat       0.00      0.00      0.00         6
-    windsor_chair       0.00      0.00      0.00         9
-           wrench       0.00      0.00      0.00         7
-         yin_yang       0.00      0.00      0.00         9
+BACKGROUND_Google       0.80      0.75      0.77        71
+            Faces       0.98      0.98      0.98        66
+       Faces_easy       0.98      0.98      0.98        66
+         Leopards       1.00      1.00      1.00        30
+       Motorbikes       0.98      1.00      0.99       121
+        accordion       1.00      1.00      1.00         9
+        airplanes       0.98      1.00      0.99       120
+           anchor       0.44      0.57      0.50         7
+              ant       0.83      0.71      0.77         7
+           barrel       1.00      1.00      1.00         8
+             bass       0.54      0.78      0.64         9
+           beaver       0.62      0.62      0.62         8
+        binocular       1.00      1.00      1.00         6
+           bonsai       1.00      0.90      0.95        20
+            brain       1.00      0.81      0.90        16
+     brontosaurus       1.00      0.57      0.73         7
+           buddha       0.93      1.00      0.97        14
+        butterfly       1.00      1.00      1.00        15
+           camera       0.88      0.88      0.88         8
+           cannon       0.40      0.29      0.33         7
+         car_side       1.00      1.00      1.00        19
+      ceiling_fan       1.00      1.00      1.00         8
+        cellphone       0.90      0.90      0.90        10
+            chair       0.80      0.80      0.80        10
+       chandelier       0.94      0.88      0.91        17
+      cougar_body       0.50      0.50      0.50         8
+      cougar_face       0.73      0.73      0.73        11
+             crab       0.88      0.58      0.70        12
+         crayfish       0.69      1.00      0.81        11
+        crocodile       1.00      0.50      0.67         8
+   crocodile_head       0.73      0.89      0.80         9
+              cup       0.82      0.90      0.86        10
+        dalmatian       0.92      1.00      0.96        11
+      dollar_bill       1.00      1.00      1.00         9
+          dolphin       0.90      0.82      0.86        11
+        dragonfly       0.85      1.00      0.92        11
+  electric_guitar       0.78      0.58      0.67        12
+         elephant       1.00      0.55      0.71        11
+              emu       0.88      0.78      0.82         9
+        euphonium       1.00      1.00      1.00        11
+             ewer       1.00      0.86      0.92        14
+            ferry       1.00      0.91      0.95        11
+         flamingo       0.82      0.82      0.82        11
+    flamingo_head       0.89      1.00      0.94         8
+         garfield       1.00      1.00      1.00         6
+          gerenuk       1.00      0.83      0.91         6
+       gramophone       1.00      1.00      1.00         9
+      grand_piano       1.00      1.00      1.00        16
+        hawksbill       1.00      1.00      1.00        15
+        headphone       0.86      0.86      0.86         7
+         hedgehog       0.90      1.00      0.95         9
+       helicopter       0.93      1.00      0.97        14
+             ibis       0.92      1.00      0.96        12
+     inline_skate       1.00      1.00      1.00         6
+      joshua_tree       1.00      0.91      0.95        11
+         kangaroo       0.81      0.93      0.87        14
+            ketch       0.80      0.89      0.84        18
+             lamp       0.71      1.00      0.83        10
+           laptop       0.86      0.92      0.89        13
+            llama       0.71      0.77      0.74        13
+          lobster       0.71      0.71      0.71         7
+            lotus       0.50      0.45      0.48        11
+         mandolin       0.60      0.86      0.71         7
+           mayfly       1.00      0.33      0.50         6
+          menorah       0.88      1.00      0.93        14
+        metronome       1.00      1.00      1.00         6
+          minaret       1.00      0.83      0.91        12
+         nautilus       0.80      0.89      0.84         9
+          octopus       0.57      0.67      0.62         6
+            okapi       0.75      0.86      0.80         7
+           pagoda       1.00      1.00      1.00         8
+            panda       1.00      1.00      1.00         7
+           pigeon       1.00      1.00      1.00         8
+            pizza       1.00      1.00      1.00         9
+         platypus       0.50      0.17      0.25         6
+          pyramid       0.90      0.90      0.90        10
+         revolver       0.93      1.00      0.96        13
+            rhino       0.77      1.00      0.87        10
+          rooster       1.00      1.00      1.00         8
+        saxophone       1.00      0.83      0.91         6
+         schooner       0.80      0.80      0.80        10
+         scissors       1.00      1.00      1.00         7
+         scorpion       0.71      0.71      0.71        14
+        sea_horse       0.90      0.90      0.90        10
+           snoopy       1.00      0.83      0.91         6
+      soccer_ball       1.00      1.00      1.00        11
+          stapler       0.58      0.88      0.70         8
+         starfish       1.00      0.79      0.88        14
+      stegosaurus       1.00      1.00      1.00        10
+        stop_sign       0.92      1.00      0.96        11
+       strawberry       0.86      1.00      0.92         6
+        sunflower       1.00      1.00      1.00        14
+             tick       1.00      1.00      1.00         8
+        trilobite       1.00      1.00      1.00        14
+         umbrella       1.00      0.83      0.91        12
+            watch       0.97      1.00      0.99        37
+      water_lilly       0.25      0.29      0.27         7
+       wheelchair       0.90      0.90      0.90        10
+         wild_cat       0.43      0.50      0.46         6
+    windsor_chair       0.89      0.89      0.89         9
+           wrench       0.78      1.00      0.88         7
+         yin_yang       1.00      0.89      0.94         9
 
-         accuracy                           0.02      1466
-        macro avg       0.01      0.01      0.01      1466
-     weighted avg       0.02      0.02      0.02      1466
+         accuracy                           0.90      1466
+        macro avg       0.87      0.86      0.86      1466
+     weighted avg       0.91      0.90      0.90      1466
 
-Model saved to advanced_image_classifier.keras
-1/1 ━━━━━━━━━━━━━━━━━━━━ 2s 2s/step
-Predicted class: gerenuk with confidence: 81.19%
-1/1 ━━━━━━━━━━━━━━━━━━━━ 0s 35ms/step
-1/1 ━━━━━━━━━━━━━━━━━━━━ 0s 28ms/step
-1/1 ━━━━━━━━━━━━━━━━━━━━ 0s 49ms/step
-1/1 ━━━━━━━━━━━━━━━━━━━━ 0s 28ms/step
-1/1 ━━━━━━━━━━━━━━━━━━━━ 0s 29ms/step
-1/1 ━━━━━━━━━━━━━━━━━━━━ 0s 46ms/step
-split_dataset/test/gerenuk/image_0031.jpg: gerenuk (81.19%)
-split_dataset/test/gerenuk/image_0018.jpg: gerenuk (44.44%)
-split_dataset/test/gerenuk/image_0007.jpg: gerenuk (92.47%)
-split_dataset/test/gerenuk/image_0010.jpg: gerenuk (98.90%)
-split_dataset/test/gerenuk/image_0014.jpg: gerenuk (93.27%)
-split_dataset/test/gerenuk/image_0003.jpg: gerenuk (99.00%)
-1/1 ━━━━━━━━━━━━━━━━━━━━ 0s 28ms/step
-1/1 ━━━━━━━━━━━━━━━━━━━━ 0s 27ms/step
-1/1 ━━━━━━━━━━━━━━━━━━━━ 0s 27ms/step
-1/1 ━━━━━━━━━━━━━━━━━━━━ 0s 27ms/step
-1/1 ━━━━━━━━━━━━━━━━━━━━ 0s 27ms/step
-1/1 ━━━━━━━━━━━━━━━━━━━━ 0s 31ms/step
 ```
 </details>
 
